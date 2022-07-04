@@ -17,34 +17,7 @@ class Matrix {
     /** Filepointer used as identifier for logging */
     std::string fp;
     /** Underlying data structure for the matrix */
-    std::vector<std::vector<int>> matrix;
-
-    /**
-     * @brief A function for logging errors with input
-     * 
-     */
-    void exitInvalidInput();
-
-    /**
-     * @brief A function for logging errors with dimensions
-     * 
-     * @param other other matrix being used in operation
-     */
-    void exitInvalidDimensions(Matrix &other);
-
-    /**
-     * @brief A function for logging errors with requested columns
-     * 
-     * @param column column that was requested
-     */
-    void exitInvalidColumn(int column);
-
-    /**
-     * @brief A function for logging errors with requested rows
-     * 
-     * @param row row that was requested
-     */
-    void exitInvalidRow(int row);
+    std::vector<std::vector<double>> matrix;
 
     /**
      * @brief A function to read header info from an mtx file
@@ -73,7 +46,7 @@ class Matrix {
      * @param filepath filepath identifer for the matrix
      * @param vals grid of values to populate matrix with
      */
-    Matrix(std::string filepath, std::vector<std::vector<int>> vals);
+    Matrix(std::string filepath, std::vector<std::vector<double>> vals);
 
     public:
     /**
@@ -141,10 +114,42 @@ class Matrix {
      * @brief Overload multiplication to multiply Matrix's
      * NOTE: Result will inherit the initial Matrix's filepath
      * 
-     * @param other 
-     * @return Matrix 
+     * @param other matrix being multiplied
+     * @return Matrix a matrix that is the result of the multiplication
      */
     Matrix operator*(Matrix &other);
+
+    /**
+     * @brief Overload equals operator to compare Matrix contents
+     * 
+     * @param other matrix being compared with
+     * @return true if matrix values are equal
+     * @return false if matrix values are not equal
+     */
+    bool operator==(Matrix &other);
+
+    /**
+     * @brief Computes the determinant of a Matrix using LU Decomposition
+     * 
+     * @return int the determinant of the matrix
+     */
+    int determinant();
+
+    /**
+     * @brief Returns the inverse matrix of the current
+     * 
+     * @return Matrix the inverse matrix of the current
+     */
+    Matrix inverse();
+
+    /**
+     * @brief A function that decomposes the input Matrix into Lower and Upper Matrices
+     * using Guass-Jordan Elimination
+     * 
+     * @param matrix NxN Matrix to decompose
+     * @return std::vector<Matrix> Vector containing the Lower(index0) and Upper(index1) output matrices
+     */
+    std::vector<Matrix> decomposeLU();
 };
 
 #endif
