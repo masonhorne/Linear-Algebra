@@ -32,10 +32,7 @@ void logInvalidDeterminant(std::string fp) {
     errorMessage.append(fp);
     errorMessage.append("\n");
     errorMessage.append("================================\n");
-    errorMessage.append("Requirements of Determinant calculation: \n");
-    errorMessage.append("\t1) Matrix being decomposed is NxN.\n");
-    errorMessage.append("\t2) Matrix must be able to factorize into components L and U via Guassian Elimination.\n");
-    errorMessage.append("\t   NOTE: This may prevent the calculation of some determinants.\n");
+    errorMessage.append("Matrix must be in the form of NxN.\n");
     // Throw error with log message
     throw std::runtime_error(errorMessage);
 }
@@ -157,29 +154,45 @@ void Matrix::readHeader(std::string line) {
 void Matrix::readRow(std::string line){
     // Row to add to the matrix
     std::vector<double> row;
-    // Build value and keep up with its sign
-    int val = 0;
+    // Build value and keep up with its sign and floating point values
+    float val = 0;
     int negative = 1;
+    float dec = 1;
+    // Parse the line character by character
     for(int i = 0; i < line.size(); i++){
         // If character is invalid exit
-        if((line[i] < '0' || line[i] > ':') && line[i] != '-') logInvalidInput(fp);
+        if((line[i] < '0' || line[i] > ':') && line[i] != '-' && line[i] != '.') logInvalidInput(fp);
         // If end of an input, add to row
         if(line[i] == ':') {
             row.push_back(val * negative);
             val = 0;
             negative = 1;
+            dec = 1;
         // If start of an input and negative, mark negative
         } else if(val == 0 && line[i] == '-') {
             // If already marked negative input is invalid
             if(negative < 0) logInvalidInput(fp);
             // Otherwise swap to negative
             negative = -negative;
-        // Otherwise add value to matrix
-        }else val = val * 10 + line[i] - '0';
+        // If the spot marks a decimal point
+        } else if(line[i] == '.') {
+            if(dec != 1) logInvalidInput(fp);
+            dec = 0.1;
+        // Otherwise add value to total
+        } else {
+            // If decimal just add to correct place
+            if(dec != 1){
+                val += (line[i] - '0') * dec;
+                dec /= 10;
+            // Otherwise add like normal
+            } else val = val * 10 + (line[i] - '0') * dec;
+        }
     }
     // Add the final value to the row
     row.push_back(val * negative);
+    // Log an error if not enough columns were given
     if(row.size() != n) logInvalidInput(fp);
+    // Add the row to the matrix
     matrix.push_back(row);
 }
 
@@ -252,17 +265,17 @@ std::string Matrix::display() {
     result += std::string("[ ") + std::to_string(n) + std::string(" ] columns.\n");
     result += std::string("================================\n");
     // Loop through values and output
-    int valueWidth = 3;
+    int valueWidth = 5;
     for(int i = 0; i < m; i++) {
-        result += formatInteger(matrix[i][0], valueWidth);
-        for(int j = 1; j < n; j++) result += formatInteger(matrix[i][j], valueWidth);
+        result += formatDouble(matrix[i][0], valueWidth);
+        for(int j = 1; j < n; j++) result += formatDouble(matrix[i][j], valueWidth);
         result += "\n";
     }
     result += std::string("================================\n");
     return result;
 }
 
-int Matrix::access(int row, int column){
+double Matrix::access(int row, int column){
     // Check the bounds of the row and column
     if(row < 1 || row > m) logInvalidRow(row, fp);
     if(column < 1 || column > n) logInvalidColumn(column, fp);
@@ -304,6 +317,49 @@ Matrix Matrix::operator*(Matrix &other){
     return Matrix(fp, vals);
 }
 
+Matrix Matrix::operator*(double val) {
+    // Initialize array to hold resulting values
+    std::vector<std::vector<double>> vals(m, std::vector<double>(n));
+    // Loop through scaling values
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            vals[i][j] = matrix[i][j] * val;
+    // Return the resulting matrix
+    return Matrix(fp, vals);
+}
+
+Matrix Matrix::operator*(int val) {
+    // Return the result of the multiplication
+    return *this * ((double) val);
+}
+
+Matrix Matrix::operator*(float val) {
+    // Return the result of the multiplication
+    return *this * ((double) val);
+}
+
+Matrix Matrix::operator/(double val) {
+    // Initialize array to hold resulting values
+    std::vector<std::vector<double>> vals(m, std::vector<double>(n));
+    // Loop through scaling values
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            vals[i][j] = matrix[i][j] / val;
+    // Return the resulting matrix
+    return Matrix(fp, vals);
+}
+
+Matrix Matrix::operator/(int val) {
+    // Return the result of the division
+    return *this / ((double) val);
+}
+
+
+Matrix Matrix::operator/(float val){
+    // Return the result of the division
+    return *this / ((double) val);
+}
+
 bool Matrix::operator==(Matrix &other){
     // If the dimensions don't match return false
     if(m != other.rows() || n != other.columns()) return false;
@@ -315,36 +371,101 @@ bool Matrix::operator==(Matrix &other){
     return true;
 }
 
+bool Matrix::operator!=(Matrix &other){
+    // Return the opposite of equal
+    return !(*this == other);
+}
+
+Matrix Matrix::operator+(Matrix &other) {
+    // If dimensions don't match display error message
+    if(m != other.rows() || n != other.columns()) logInvalidDimensions(other, fp, m, n);
+    // Initialize values grid for new matrix
+    std::vector<std::vector<double>> vals(m, std::vector<double>(n));
+    // Loop through all indices in output grid
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            // Each index is the sum of the two in the input
+            vals[i][j] = matrix[i][j] + other.access(i + 1, j + 1);
+    // Return the resulting matrix
+    return Matrix(fp, vals);
+}
+
+Matrix Matrix::operator-() {
+    // Initialize values grid for new matrix
+    std::vector<std::vector<double>> vals(m, std::vector<double>(n));
+    // Loop through all indices in output grid
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            // Each index is the negative of its value in matrix
+            vals[i][j] = -matrix[i][j];
+    // Return the resulting matrix
+    return Matrix(fp, vals);
+}
+
+Matrix Matrix::operator-(Matrix &other) {
+    // If dimensions don't match display error message
+    if(m != other.rows() || n != other.columns()) logInvalidDimensions(other, fp, m, n);
+    // Initialize values grid for new matrix
+    std::vector<std::vector<double>> vals(m, std::vector<double>(n));
+    // Loop through all indices in output grid
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            // Each index is the subtraction of the two in the input
+            vals[i][j] = matrix[i][j] - other.access(i + 1, j + 1);
+    // Return the resulting matrix
+    return Matrix(fp, vals);
+}
+
 //////////////////////////////////////////
 //  Functions for Matrix objects
 //////////////////////////////////////////
 
+double determinantHelper(std::vector<std::vector<double>> matrix, int n){
+    // Initialize result to 0 and subMatrix of NxN dimensions
+    int result = 0;
+    std::vector<std::vector<double>> subMat(n, std::vector<double>(n));
+    // Handle the trivial cases of N = 1 or 2
+    if(n == 1) return matrix[0][0];
+    if(n == 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+    // Loop through each index in list
+    for(int idx = 0; idx < n; idx++){
+        // Use x to keep up with pointer into sub matrix
+        int x = 0;
+        // Loop through rows in matrix
+        for(int i = 1; i < n; i++){
+            // Use y to keep pointer into sub matrix
+            int y = 0;
+            // Loop through columns in matrix
+            for(int j = 0; j < n; j++){
+                // If this is the submatrix being calculated, skip it
+                if(j == idx) continue;
+                // Store value in submatrix
+                subMat[x][y] = matrix[i][j];
+                // Progress y pointer
+                y++;
+            }
+            // Progress x pointer
+            x++;
+        }
+        // The sign for the component is based on whether x pointer is odd or even
+        int sign = idx % 2 == 0 ? 1 : -1;
+        // Add component to result, recursing to solve for the submatrix's determinant
+        result = result + (sign * matrix[0][idx] * determinantHelper(subMat, n - 1));
+    }
+    // Return the resulting determinant
+    return result;
+}
+
 int Matrix::determinant(){
-    // Speed up computation of 2x2 matrices
-    if(m == n && m == 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-    // Check that the Matrix can be decomposed to L and U
-    std::vector<Matrix> decomposition;
-    try {
-        // Decompose the Matrix to L and U
-        decomposition = this->decomposeLU();
-    } catch (std::runtime_error error) {
-        // Log an error if cannot be decomposed
-        logInvalidDeterminant(fp);
-    }
-    // Calculate the determinants of L & U by multiplying their diagonals
-    long long lTotal = decomposition[0].access(1, 1);
-    long long uTotal = decomposition[1].access(1, 1);
-    for(int i = 1; i < m; i++){
-        lTotal *= decomposition[0].access(i + 1, i + 1);
-        uTotal *= decomposition[1].access(i + 1, i + 1);
-    }
-    // Return the sum of their determinants
-    return lTotal * uTotal;
+    // Check if dimensions are invalid and log if so
+    if(m != n) logInvalidDeterminant(fp);
+    // Otherwise use recursive helper to calculate determinant
+    return determinantHelper(matrix, m);
 }
 
 Matrix Matrix::inverse() {
     // Calculate the denominator for the resulting matrix
-    int denominator;
+    float denominator;
     try {
         // The denominator is the total matrix determinant
         denominator = this->determinant();
@@ -369,7 +490,7 @@ Matrix Matrix::inverse() {
             vals[row][col] = 1;
             // Calculate numerator and store result
             int numerator = Matrix(fp, vals).determinant();
-            result[row][col] = numerator / denominator;
+            result[col][row] = numerator / denominator;
             // Unmark our position to move on
             vals[row][col] = 0;
         }
@@ -405,7 +526,6 @@ std::vector<Matrix> Matrix::decomposeLU(){
                 int base = col == 0 ? matrix[row][col] : U[row][col];
                 // The value to modify by is row == col
                 int edit = U[col][col];
-                // std::cout << "REACHED2" << std::endl;
                 // If not evenly divisible no LU Decomposition exists
                 if(base % edit != 0) logInvalidLUDecomposition(fp);
                 // The value to update by is the base divided by edit

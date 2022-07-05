@@ -85,9 +85,9 @@ class Matrix {
      * 
      * @param row row to access value from
      * @param column column to access value from
-     * @return int value at indices in matrix
+     * @return double value at the indices in the matrix
      */
-    int access(int row, int column);
+    double access(int row, int column);
 
     /**
      * @brief Returns the number of rows for a given Matrix
@@ -112,12 +112,59 @@ class Matrix {
 
     /**
      * @brief Overload multiplication to multiply Matrix's
-     * NOTE: Result will inherit the initial Matrix's filepath
      * 
      * @param other matrix being multiplied
      * @return Matrix a matrix that is the result of the multiplication
      */
     Matrix operator*(Matrix &other);
+
+    /**
+     * @brief Overload multiplication to multiply Matrix by scalar value
+     * 
+     * @param double val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the multiplication
+     */
+    Matrix operator*(double val);
+
+    /**
+     * @brief Overload multiplication to multiply Matrix by scalar value
+     * 
+     * @param int val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the multiplication
+     */
+    Matrix operator*(int val);
+
+    /**
+     * @brief Overload multiplication to multiply Matrix by scalar value
+     * 
+     * @param float val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the multiplication
+     */
+    Matrix operator*(float val);
+
+    /**
+     * @brief Overload division to divide Matrix by scalar value
+     * 
+     * @param double val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the division
+     */
+    Matrix operator/(double val);
+
+    /**
+     * @brief Overload division to divide Matrix by scalar value
+     * 
+     * @param int val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the division
+     */
+    Matrix operator/(int val);
+
+    /**
+     * @brief Overload division to divide Matrix by scalar value
+     * 
+     * @param float val scalar value to multiply by
+     * @return Matrix a matrix that is the result of the division
+     */
+    Matrix operator/(float val);
 
     /**
      * @brief Overload equals operator to compare Matrix contents
@@ -129,7 +176,41 @@ class Matrix {
     bool operator==(Matrix &other);
 
     /**
-     * @brief Computes the determinant of a Matrix using LU Decomposition
+     * @brief Overload not equals operator to compare Matrix contents
+     * 
+     * @param other matrix being compared with
+     * @return true if matrix values are not equal
+     * @return false if matrix values are equal
+     */
+    bool operator!=(Matrix &other);
+
+    /**
+     * @brief Overload addition operator to add Matrices together
+     * 
+     * @param other matrix being added with
+     * @return Matrix containing the result of addition
+     */
+    Matrix operator+(Matrix &other);
+
+    /**
+     * @brief Overload negation operator to get negative of Matrix
+     * 
+     * @return Matrix containing negative values of original
+     */
+    Matrix operator-();
+
+    /**
+     * @brief Overload subtraction operator to subtract Matrices
+     * 
+     * @param other matrix being subtracted
+     * @return Matrix containing the result of subtraction
+     */
+    Matrix operator-(Matrix &other);
+
+    /**
+     * @brief Computes the determinant of a Matrix using by recursively
+     * breaking the matrix into submatrices until they become a 1x1 or
+     * a 2x2 matrix
      * 
      * @return int the determinant of the matrix
      */

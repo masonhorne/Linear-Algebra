@@ -17,7 +17,7 @@ bool endsWith(string word, string suffix) {
     return true;
 }
 
-std::string formatInteger(int value, int width) {
+std::string formatDouble(double value, int width) {
     std::ostringstream oss;
     oss << std::setfill(' ') << std::setw(width) << value;
     return oss.str();

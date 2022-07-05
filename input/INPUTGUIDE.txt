@@ -1,0 +1,27 @@
+Test Files and their Relations to each other
+--------------------------------------------
+test1.mtx - 2x2 Matrix equal to test23.mtx - test4.mtx and test24.mtx + test4.mtx
+test2.mtx - 3x4 Matrix
+test3.mtx - 4x2 Matrix
+test4.mtx - 2x2 Matrix equal to test23.mtx - test1.mtx and test1.mtx - test24.mtx
+test5.mtx - 3x2 Matrix equal to test25.mtx / 4
+test6.mtx - 2x3 Matrix
+test7.mtx - 3x3 Matrix equal to test5.mtx * test6.mtx
+test8.mtx - 1x2 Matrix
+test9.mtx - 2x1 Matrix
+test10.mtx - 1x1 Matrix equal to test8.mtx * test9.mtx
+test11.mtx - 3x3 Matrix
+test12.mtx - 3x3 Matrix L component in LU decomposition of test11.mtx
+test13.mtx - 3x3 Matrix U component in LU decomposition of test11.mtx
+test14.mtx - 3x3 Matrix that cannot factorize into L & U
+test15.mtx - 1x4 Matrix that is row 1 of test2.mtx
+test16.mtx - 4x1 Matrix that is column 2 of test3.mtx
+test17.mtx - 4x4 Matrix with a determinant of -6
+test18.mtx - 2x2 Matrix
+test19.mtx - 2x2 Matrix that is the inverse of test18.mtx
+test20.mtx - 3x3 Matrix
+test21.mtx - 3x3 Matrix that is the inverse of test22.mtx
+test22.mtx - 2x2 Matrix equal to test1.mtx * test4.mtx
+test23.mtx - 2x2 Matrix equal to test1.mtx + test4.mtx
+test24.mtx - 2x2 Matrix equal to test1.mtx - test4.mtx
+test25.mtx - 3x2 Matrix equal to test5.mtx * 4

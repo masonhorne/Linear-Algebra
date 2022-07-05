@@ -8,20 +8,23 @@
 
 bool testMGreaterThanNMatrixConstruction() {
     Matrix matrix("input/test2.mtx");
+        std::string expected = "================================\nDisplaying Matrix: input/test2.mtx\n[ 3 ] rows.\n[ 4 ] columns.\n================================\n    1    2    3    4\n    5    6    7    8\n    9   10   11   12\n================================\n";
     std::string result = matrix.display();
-    return result == "================================\nDisplaying Matrix: input/test2.mtx\n[ 3 ] rows.\n[ 4 ] columns.\n================================\n  1  2  3  4\n  5  6  7  8\n  9 10 11 12\n================================\n";
+    return result == expected;
 }
 
 bool testMLessThanNMatrixConstruction() {
     Matrix matrix("input/test3.mtx");
+    std::string expected = "================================\nDisplaying Matrix: input/test3.mtx\n[ 4 ] rows.\n[ 2 ] columns.\n================================\n    1    2\n    3    4\n    5    6\n    7    8\n================================\n";
     std::string result = matrix.display();
-    return result == "================================\nDisplaying Matrix: input/test3.mtx\n[ 4 ] rows.\n[ 2 ] columns.\n================================\n  1  2\n  3  4\n  5  6\n  7  8\n================================\n";
+    return result == expected;
 }
 
 bool testNxNMatrixConstruction() {
     Matrix matrix("input/test1.mtx");
+    std::string expected = "================================\nDisplaying Matrix: input/test1.mtx\n[ 2 ] rows.\n[ 2 ] columns.\n================================\n   16    3\n    8    2\n================================\n";
     std::string result = matrix.display();
-    return result == "================================\nDisplaying Matrix: input/test1.mtx\n[ 2 ] rows.\n[ 2 ] columns.\n================================\n 16  3\n  8  2\n================================\n";
+    return result == expected;
 }
 
 bool testMatrixRowAccess() {
@@ -88,24 +91,121 @@ bool testMatrixInvalidAccess() {
 bool testNxNTimesNxNMultiplication() {
     Matrix one("input/test1.mtx");
     Matrix two("input/test4.mtx");
+    Matrix expected("input/test22.mtx");
     Matrix result = one * two;
-    return result.display() == "================================\nDisplaying Matrix: input/test1.mtx\n[ 2 ] rows.\n[ 2 ] columns.\n================================\n 22 63\n 12 34\n================================\n";
+    return result == expected;
 }
 
 bool testMxNTimesNxMMultiplicationMGreaterThanN() {
     Matrix one("input/test5.mtx");
     Matrix two("input/test6.mtx");
-    Matrix result = one * two;
     Matrix expected("input/test7.mtx");
+    Matrix result = one * two;
     return result == expected;
 }
 
 bool testMxNTimesNxMMultiplicationMLessThanN() {
     Matrix one("input/test8.mtx");
     Matrix two("input/test9.mtx");
-    Matrix result = one * two;
     Matrix expected("input/test10.mtx");
+    Matrix result = one * two;
     return result == expected;
+}
+
+bool testNotEqualDimensions(){
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test2.mtx");
+    return one != two;
+}
+
+bool testNotEqualValue() {
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test4.mtx");
+    return one != two;
+}
+
+bool testNotEqualFalse() {
+    Matrix one("input/test2.mtx");
+    Matrix two("input/test15.mtx");
+    return !(one.getRow(1) != two);
+}
+
+bool testValidAdd() {
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test4.mtx");
+    Matrix expected("input/test23.mtx");
+    return one + two == expected;
+}
+
+bool testInvalidAdd() {
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test2.mtx");
+    try {
+        one + two;
+        return false;
+    } catch (std::runtime_error error) {
+        return true;
+    }
+}
+
+bool testValidSubtract() {
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test4.mtx");
+    Matrix expected("input/test24.mtx");
+    return one - two == expected;
+}
+
+bool testInvalidSubtract() {
+    Matrix one("input/test1.mtx");
+    Matrix two("input/test2.mtx");
+    try {
+        one + two;
+        return false;
+    } catch (std::runtime_error error) {
+        return true;
+    }
+}
+
+bool testMultiplyDouble() {
+    double value = 4;
+    Matrix one("input/test5.mtx");
+    Matrix expected("input/test25.mtx");
+    return (one * value) == expected;
+}
+
+bool testMultiplyInteger() {
+    int value = 4;
+    Matrix one("input/test5.mtx");
+    Matrix expected("input/test25.mtx");
+    return (one * value) == expected;
+}
+
+bool testMultiplyFloat() {
+    float value = 4;
+    Matrix one("input/test5.mtx");
+    Matrix expected("input/test25.mtx");
+    return (one * value) == expected;
+}
+
+bool testDivideDouble() {
+    double value = 4;
+    Matrix one("input/test25.mtx");
+    Matrix expected("input/test5.mtx");
+    return (one / value) == expected;
+}
+
+bool testDivideInteger() {
+    int value = 4;
+    Matrix one("input/test25.mtx");
+    Matrix expected("input/test5.mtx");
+    return (one / value) == expected;
+}
+
+bool testDivideFloat() {
+    float value = 4;
+    Matrix one("input/test25.mtx");
+    Matrix expected("input/test5.mtx");
+    return (one / value) == expected;
 }
 
 bool testValidLUDecomposition() {
@@ -158,15 +258,32 @@ bool testDeterminantInvalid() {
         matrix.determinant();
         return false;
     } catch(std::runtime_error error) {
-        std::string expected = "Unable to calculate Determinant of: input/test2.mtx\n================================\nRequirements of Determinant calculation: \n\t1) Matrix being decomposed is NxN.\n\t2) Matrix must be able to factorize into components L and U via Guassian Elimination.\n\t   NOTE: This may prevent the calculation of some determinants.\n";
+        std::string expected = "Unable to calculate Determinant of: input/test2.mtx\n================================\nMatrix must be in the form of NxN.\n";
         return expected == error.what();
     }
 }
 
 bool testInverseTrivial() {
-    Matrix one("input/test18.mtx");
-    Matrix two("input/test19.mtx");
-    return one.inverse() == two;
+    Matrix matrix("input/test18.mtx");
+    Matrix expected("input/test19.mtx");
+    return matrix.inverse() == expected;
+} 
+
+bool testInverseComplex() {
+    Matrix matrix("input/test20.mtx");
+    Matrix expected("input/test21.mtx");
+    return matrix.inverse() == expected;
+}
+
+bool testInverseInvalid() {
+    Matrix matrix("input/test6.mtx");
+    try {
+        matrix.inverse();
+        return false;
+    } catch(std::runtime_error error) {
+        std::string expected = "Unable to calculate Inverse of: input/test6.mtx\n================================\nRequirements of Inverse calculation: \n\t1) Matrix being operated on is NxN.\n\t2) Matrix must be able to calculate its values via Cramers Rule.\n\t   NOTE: This may prevent the calculation of some inverses.\n";
+        return true;
+    }
 }
 
 //////////////////////////////////////////
@@ -197,14 +314,6 @@ void testInvalidAccessors() {
     std::cout << (testMatrixInvalidAccess() ? "PASS\n" : "FAIL\n");
 }
 
-void testMatrixMultiplication() {
-    std::cout << "\nTesting Matrix Multiplication\n";
-    std::cout << "=============================\n";
-    std::cout << (testNxNTimesNxNMultiplication() ? "PASS\n" : "FAIL\n");
-    std::cout << (testMxNTimesNxMMultiplicationMGreaterThanN() ? "PASS\n" : "FAIL\n");
-    std::cout << (testMxNTimesNxMMultiplicationMLessThanN() ? "PASS\n" : "FAIL\n");
-}
-
 void testLUDecomposition() {
     std::cout << "\nTesting Matrix LU Decomposition\n";
     std::cout << "=============================\n";
@@ -225,6 +334,29 @@ void testInverseCalculation() {
     std::cout << "\nTesting Matrix Inverse Calculation\n";
     std::cout << "=============================\n";
     std::cout << (testInverseTrivial() ? "PASS\n" : "FAIL\n");
+    std::cout << (testInverseComplex() ? "PASS\n" : "FAIL\n");
+    std::cout << (testInverseInvalid() ? "PASS\n" : "FAIL\n");
+}
+
+void testMatrixOperations() {
+    std::cout << "\nTesting Matrix Operator Calculations\n";
+    std::cout << "=============================\n";
+    std::cout << (testNotEqualDimensions() ? "PASS\n" : "FAIL\n");
+    std::cout << (testNotEqualValue() ? "PASS\n" : "FAIL\n");
+    std::cout << (testNotEqualFalse() ? "PASS\n" : "FAIL\n");
+    std::cout << (testValidAdd() ? "PASS\n" : "FAIL\n");
+    std::cout << (testInvalidAdd() ? "PASS\n" : "FAIL\n");
+    std::cout << (testValidSubtract() ? "PASS\n" : "FAIL\n");
+    std::cout << (testInvalidSubtract() ? "PASS\n" : "FAIL\n");
+    std::cout << (testMultiplyDouble() ? "PASS\n" : "FAIL\n");
+    std::cout << (testMultiplyInteger() ? "PASS\n" : "FAIL\n");
+    std::cout << (testMultiplyFloat() ? "PASS\n" : "FAIL\n");
+    std::cout << (testDivideDouble() ? "PASS\n" : "FAIL\n");
+    std::cout << (testDivideInteger() ? "PASS\n" : "FAIL\n");
+    std::cout << (testDivideFloat() ? "PASS\n" : "FAIL\n");
+    std::cout << (testNxNTimesNxNMultiplication() ? "PASS\n" : "FAIL\n");
+    std::cout << (testMxNTimesNxMMultiplicationMGreaterThanN() ? "PASS\n" : "FAIL\n");
+    std::cout << (testMxNTimesNxMMultiplicationMLessThanN() ? "PASS\n" : "FAIL\n");
 }
 
 /**
@@ -237,7 +369,7 @@ int main() {
     testConstruction();
     testAccessors();
     testInvalidAccessors();
-    testMatrixMultiplication();
+    testMatrixOperations();
     testLUDecomposition();
     testDeterminantCalculation();
     testInverseCalculation();

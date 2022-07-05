@@ -14,12 +14,12 @@
 bool endsWith(std::string word, std::string suffix);
 
 /**
- * @brief Formats an integer value into a string of given width
+ * @brief Formats a double value into a string of given width
  * 
  * @param value value to format
  * @param width width to format value to
- * @return std::string 
+ * @return std::string string containing the formatted value
  */
-std::string formatInteger(int value, int width);
+std::string formatDouble(double value, int width);
 
 #endif
