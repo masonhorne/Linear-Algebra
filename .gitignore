@@ -1,2 +1,4 @@
 bin/
 .vscode/
+log/
+diagrams/uml_export.uxf

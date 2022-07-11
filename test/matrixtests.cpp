@@ -1,6 +1,26 @@
 #include<string>
 #include<iostream>
+#include<fstream>
 #include"../src/matrix.hpp"
+
+//////////////////////////////////////////
+// Helper functions for verifying tests
+//////////////////////////////////////////
+
+bool compareFiles(const std::string& p1, const std::string& p2) {
+    // Open the two files we are comparing
+    std::ifstream f1(p1, std::ifstream::binary|std::ifstream::ate);
+    std::ifstream f2(p2, std::ifstream::binary|std::ifstream::ate);
+    // If files can't open return false
+    if (f1.fail() || f2.fail()) return false;
+    // If size mismatch return false
+    if (f1.tellg() != f2.tellg()) return false; 
+    // Move pointers to beginning of file
+    f1.seekg(0, std::ifstream::beg);
+    f2.seekg(0, std::ifstream::beg);
+    // Check if their values are equal
+    return std::equal(std::istreambuf_iterator<char>(f1.rdbuf()), std::istreambuf_iterator<char>(), std::istreambuf_iterator<char>(f2.rdbuf()));
+}
 
 //////////////////////////////////////////
 //  Functions testing components
@@ -25,6 +45,12 @@ bool testNxNMatrixConstruction() {
     std::string expected = "================================\nDisplaying Matrix: input/test1.mtx\n[ 2 ] rows.\n[ 2 ] columns.\n================================\n   16    3\n    8    2\n================================\n";
     std::string result = matrix.display();
     return result == expected;
+}
+
+bool testOutputMatrix(){
+    Matrix matrix("input/test1.mtx");
+    matrix.save("output/test1");
+    return compareFiles("input/test1.mtx", "output/test1.mtx");
 }
 
 bool testMatrixRowAccess() {
@@ -290,12 +316,13 @@ bool testInverseInvalid() {
 //  Test Suites for given functionality
 //////////////////////////////////////////
 
-void testConstruction() {
-    std::cout << "\nTesting Matrix Construction\n";
+void testFileIO() {
+    std::cout << "\nTesting Matrix IO\n";
     std::cout << "=============================\n";
     std::cout << (testNxNMatrixConstruction() ? "PASS\n" : "FAIL\n");
     std::cout << (testMGreaterThanNMatrixConstruction() ? "PASS\n" : "FAIL\n");
     std::cout << (testMLessThanNMatrixConstruction() ? "PASS\n" : "FAIL\n");
+    std::cout << (testOutputMatrix() ? "PASS\n" : "FAIL\n");
 }
 
 void testAccessors() {
@@ -366,7 +393,7 @@ void testMatrixOperations() {
  */
 int main() {
 
-    testConstruction();
+    testFileIO();
     testAccessors();
     testInvalidAccessors();
     testMatrixOperations();

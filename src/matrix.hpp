@@ -1,6 +1,6 @@
 #include<string>
 #include<vector>
-#include"util.hpp"
+#include"iohandler.hpp"
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
@@ -20,26 +20,6 @@ class Matrix {
     std::vector<std::vector<double>> matrix;
 
     /**
-     * @brief A function to read header info from an mtx file
-     * 
-     * @param line line of input to parse
-     */
-    void readHeader(std::string line);
-
-    /**
-     * @brief A function to read a matrix row from an mtx file
-     * 
-     * @param line line of matrix values to parse
-     */
-    void readRow(std::string line);
-
-    /**
-     * @brief Populates the array from its input file
-     * 
-     */
-    void readInput();
-
-    /**
      * @brief Special constructor for building a matrix from a given
      * grid of input values
      * 
@@ -56,6 +36,13 @@ class Matrix {
      */
     Matrix(std::string filepath);
 
+    /**
+     * @brief Exports a matrix to an mtx file with the
+     * provided filename
+     * 
+     * @param filename filename to save matrix as
+     */
+    void save(std::string filename);
 
     /**
      * @brief Return the matrix for a given row
